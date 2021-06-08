@@ -181,7 +181,7 @@ def task_2():
     # Train model
     history = model.fit(train_loader,
                             epochs=50,
-                            batch_size=5,
+                            batch_size=16,
                             validation_data=val_loader,
                             validation_steps=1,
                             callbacks=[es])

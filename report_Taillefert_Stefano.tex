@@ -95,13 +95,59 @@
 		\centering
 		\includegraphics[width=\textwidth]{src/plot_task1.png}
 		\caption{The plot for T1}
-		\label{fig:plot}
+		\label{fig:plot_T1}
 	\end{figure}
 
 	The results from the model are:\\
 	
-	Test loss: 0.36480 - Accuracy: 0.85600 - MSE: 0.06929
+	Test loss: 0.3490 - Accuracy: 0.8659 - MSE: 0.0659\\
 
-	The model is in the file \texttt{deliverable/nn\_task1.h}, while the code used to generate it is in \texttt{src/create\_models.py}
+	The model is in the file \texttt{deliverable/nn\_task1.h5}, while the code used to 
+	generate it is in \texttt{src/create\_models.py}
+
+
+\section*{Problem 2}
+
+	\subsection*{Without augmentation}
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{src/plot_task2_no_augmentation.png}
+			\caption{The plot for T2 without augmentation}
+			\label{fig:plot_T2_1}
+		\end{figure}
+
+		The results from the model without augmentation are:\\
+		
+		Test loss: 0.2334 - Accuracy: 0.9499 - MSE: 0.0268 (my pc)\\
+		Test loss: 0.3815 - Accuracy: 0.9300 - MSE: 0.0376 (colab)\\
+
+		The model is in the files \texttt{deliverable/nn\_task2\_no\_augmentation.h5} and\\ 
+		\texttt{deliverable/nn\_task2\_no\_augmentation.pkl}, while the code used to generate 
+		it is in \texttt{src/create\_models.py}
+
+
+	\subsection*{With augmentation}
+
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{src/plot_task2_augmentation.png}
+			\caption{The plot for T2 with augmentation}
+			\label{fig:plot_T2_2}
+		\end{figure}
+
+		The results from the model with augmentation are:\\
+		
+		Test loss: 0.1591 - Accuracy: 0.9499 - MSE: 0.0300 (colab)\\
+
+		The model is in the files \texttt{deliverable/nn\_task2\_augmentation.h5} and\\ 
+		\texttt{deliverable/nn\_task2\_augmentation.pkl}, while the code used to generate 
+		it is in \texttt{src/create\_models.py}
+
+
+\section*{Conclusions}
+
+	T1 and first part of T2 ran on my pc, T2 part 2 ran on Colab cause out of VRAM
+
 
 \end{document}
