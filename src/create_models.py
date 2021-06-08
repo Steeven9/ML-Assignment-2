@@ -3,6 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from numpy.core.numeric import Inf
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential, applications, optimizers, utils
 from tensorflow.keras.callbacks import EarlyStopping
@@ -14,6 +15,36 @@ import custom_utils as cu
 
 np.random.seed(69)
 tf.random.set_seed(69)
+
+def create_and_train_model(neurons, learning_rate, x_train, y_train):
+    # Build model
+    model = Sequential()
+    model.add(Conv2D(8, (5, 5), activation='relu', input_shape=(32, 32, 3)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(16, (3, 3), strides=(2, 2), activation='relu'))
+    model.add(AveragePooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+    model.add(Dense(neurons, activation='tanh'))
+    model.add(Dense(3, activation='softmax'))
+
+    # Compile model
+    model.compile(optimizer=optimizers.RMSprop(learning_rate=learning_rate), 
+                loss='categorical_crossentropy', 
+                metrics=['accuracy', 'mse'])
+
+    model.summary()
+    es = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+    # Train model    
+    history = model.fit(x_train, 
+            y_train, 
+            shuffle=True,
+            batch_size=128, 
+            epochs=500,
+            validation_split=0.2,
+            callbacks=[es])
+    return model, history
+
 
 def task_1():
     # Load the data
@@ -28,38 +59,34 @@ def task_1():
     y_train = utils.to_categorical(y_train, n_classes)
     y_test = utils.to_categorical(y_test, n_classes)
 
-    # Build model
-    model = Sequential()
-    model.add(Conv2D(8, (5, 5), activation='relu', input_shape=(32, 32, 3)))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Conv2D(16, (3, 3), strides=(2, 2), activation='relu'))
-    model.add(AveragePooling2D(pool_size=(2, 2)))
-    model.add(Flatten())
-    model.add(Dense(8, activation='tanh'))
-    model.add(Dense(3, activation='softmax'))
+    # Build all models and save them
+    # – learning rate: [0.01, 0.0001]
+    # – number of neurons: [16, 64]
+    models_array = []
+    model, history = create_and_train_model(8, 0.003, x_train, y_train)
+    models_array.append((model, history, '8 neurons - 0.003 LR'))
+    model, history = create_and_train_model(16, 0.01, x_train, y_train)
+    models_array.append((model, history, '16 neurons - 0.01 LR'))
+    model, history = create_and_train_model(64, 0.01, x_train, y_train)
+    models_array.append((model, history, '64 neurons - 0.01 LR'))
+    model, history = create_and_train_model(16, 0.0001, x_train, y_train)
+    models_array.append((model, history, '16 neurons - 0.0001 LR'))
+    model, history = create_and_train_model(64, 0.0001, x_train, y_train)
+    models_array.append((model, history, '64 neurons - 0.0001 LR'))
 
-    # Compile model
-    model.compile(optimizer=optimizers.RMSprop(learning_rate=0.003), 
-                loss='categorical_crossentropy', 
-                metrics=['accuracy', 'mse'])
-    es = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    acc = Inf
+    for model_struct in models_array:
+        # Evaluate model
+        scores = model_struct[0].evaluate(x_test, y_test)
+        print('Model: {}'.format(model_struct[2]))
+        print('Test loss: {} - Accuracy: {} - MSE: {}'.format(*scores))
+        if scores[1] < acc:
+            model = model_struct[0]
+            history = model_struct[1]
+            best_model = model_struct[2]
+    print('Best model is: ' + best_model)
 
-    model.summary()
-
-    # Train model    
-    history = model.fit(x_train, 
-            y_train, 
-            shuffle=True,
-            batch_size=128, 
-            epochs=500,
-            validation_split=0.2,
-            callbacks=[es])
-
-    # Evaluate model
-    scores = model.evaluate(x_test, y_test)
-    print('Test loss: {} - Accuracy: {} - MSE: {}'.format(*scores))
-
-    # Save model
+    # Save best model
     model.save('./nn_task1.h5')
 
     # Draw plot
