@@ -3,7 +3,6 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from numpy.core.numeric import Inf
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential, applications, optimizers, utils
 from tensorflow.keras.callbacks import EarlyStopping
@@ -74,16 +73,18 @@ def task_1():
     model, history = create_and_train_model(64, 0.0001, x_train, y_train)
     models_array.append((model, history, '64 neurons - 0.0001 LR'))
 
-    acc = Inf
+    acc = 0
     for model_struct in models_array:
         # Evaluate model
         scores = model_struct[0].evaluate(x_test, y_test)
         print('Model: {}'.format(model_struct[2]))
         print('Test loss: {} - Accuracy: {} - MSE: {}'.format(*scores))
-        if scores[1] < acc:
+        print('Epochs: {}'.format(len(model_struct[1].epoch)))
+        if scores[1] > acc:
             model = model_struct[0]
             history = model_struct[1]
             best_model = model_struct[2]
+            acc = scores[1]
     print('Best model is: ' + best_model)
 
     # Save best model
