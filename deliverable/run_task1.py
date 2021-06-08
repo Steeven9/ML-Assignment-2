@@ -13,7 +13,6 @@ if __name__ == '__main__':
     (x_train, y_train), (x_test, y_test) = cu.load_cifar10()
 
     # Normalize to 0-1 range
-    x_train = x_train / 255.
     x_test = x_test / 255.
 
     # Split into classes

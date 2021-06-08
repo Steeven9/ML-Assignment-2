@@ -98,9 +98,22 @@
 		\label{fig:plot_T1}
 	\end{figure}
 
-	The results from the model are:\\
+	The results from the models are:\\
 	
-	Test loss: 0.3490 - Accuracy: 0.8659 - MSE: 0.0659\\
+	\begin{table}
+		\centering
+		\begin{tabular}{cccc}
+			Model & Test loss & Accuracy & MSE\\
+			\hline
+			8 neurons - 0.003 LR & 0.3564 & 0.8576 & 0.0674\\
+			16 neurons - 0.01 LR & 0.4255 & 0.8363 & 0.0798\\
+			64 neurons - 0.01 LR & 0.4881 & 0.8113 & 0.0920\\
+			16 neurons - 0.0001 LR & 0.3692 & 0.8536 & 0.0703\\
+			64 neurons - 0.0001 LR & 0.3952 & 0.8416 & 0.0756
+		\end{tabular}
+	\end{table}
+
+	The best model is the one with 8 neurons - 0.003 LR, the initial one.
 
 	The model is in the file \texttt{deliverable/nn\_task1.h5}, while the code used to 
 	generate it is in \texttt{src/create\_models.py}
@@ -119,8 +132,8 @@
 
 		The results from the model without augmentation are:\\
 		
-		Test loss: 0.2334 - Accuracy: 0.9499 - MSE: 0.0268 (my pc)\\
-		Test loss: 0.3815 - Accuracy: 0.9300 - MSE: 0.0376 (colab)\\
+		Test loss: 0.2259 - Accuracy: 0.9366 - MSE: 0.0319 (my pc)\\
+		Test loss: 0.3201 - Accuracy: 0.9100 - MSE: 0.0464 (colab)\\
 
 		The model is in the files \texttt{deliverable/nn\_task2\_no\_augmentation.h5} and\\ 
 		\texttt{deliverable/nn\_task2\_no\_augmentation.pkl}, while the code used to generate 
@@ -138,7 +151,7 @@
 
 		The results from the model with augmentation are:\\
 		
-		Test loss: 0.1591 - Accuracy: 0.9499 - MSE: 0.0300 (colab)\\
+		Test loss: 0.2214 - Accuracy: 0.9133 - MSE: 0.0421 (colab)\\
 
 		The model is in the files \texttt{deliverable/nn\_task2\_augmentation.h5} and\\ 
 		\texttt{deliverable/nn\_task2\_augmentation.pkl}, while the code used to generate 
@@ -147,7 +160,11 @@
 
 \section*{Conclusions}
 
-	T1 and first part of T2 ran on my pc, T2 part 2 ran on Colab cause out of VRAM
+	T1 and first part of T2 ran on my pc, T2 part 2 ran on Colab cause out of VRAM\\
+
+	\texttt{W tensorflow/core/common\_runtime/bfc\_allocator.cc:456] Allocator (GPU\_0\_bfc) ran
+	out of memory trying to allocate 3.59GiB (rounded to 3853516800)requested by op
+	sequential\_6/vgg16/block1\_conv1/Relu}
 
 
 \end{document}

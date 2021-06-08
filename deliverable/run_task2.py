@@ -25,16 +25,11 @@ if __name__ == '__main__':
     (x_train_raw, y_train_raw), (x_test_raw, y_test_raw) = cu.load_rps()
 
     # Preprocess data
+    # Preprocess and split data
     x, y = cu.make_dataset(x_train_raw, y_train_raw, label_to_idx, (img_size, img_size))
-    x_t, y_t = cu.make_dataset(x_test_raw, y_test_raw, label_to_idx, (img_size, img_size))
+    x_test, y_test = cu.make_dataset(x_test_raw, y_test_raw, label_to_idx, (img_size, img_size))
 
-    train_idx, test_idx = train_test_split(np.arange(x.shape[0]), test_size=0.25, stratify=y)
-    train_idx, val_idx = train_test_split(train_idx, test_size=0.2, stratify=y[train_idx])
-
-    x_train, y_train = x[train_idx]/255., y[train_idx]
-    x_val, y_val = x[val_idx]/255., y[val_idx]
-    x_test, y_test = x[test_idx]/255., y[test_idx]
-    
+    x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2)
 
     # Load the trained model
     model = load_model('./nn_task2_no_augmentation.h5')
@@ -50,7 +45,6 @@ if __name__ == '__main__':
     print('-- Stats for task 2 (without augmentation) --')
     print('Test loss: {} - Accuracy: {} - '.format(*scores), end='')
     print('MSE: {}'.format(mse))
-
 
     # Load the trained model with augmentation
     model = load_model('./nn_task2_augmentation.h5')
