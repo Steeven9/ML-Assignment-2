@@ -16,8 +16,6 @@ np.random.seed(69)
 tf.random.set_seed(69)
 
 def task_1():
-    #### TASK 1 ####
-
     # Load the data
     (x_train, y_train), (x_test, y_test) = cu.load_cifar10()
 
@@ -77,22 +75,15 @@ def task_1():
     plt.savefig('./plot_task1.png')
     plt.close()
 
-    print("Done with task 1.")
+    print("=== Done with task 1. ===")
 
 
 def task_2():
-    #### TASK 2 ####
-
     img_size = 224
     label_to_idx = {
         'rock':0,
         'paper':1,
         'scissors':2
-    }
-    idx_to_label = {
-        0:'rock',
-        1:'paper',
-        2:'scissors'
     }
 
     # Load data
@@ -128,7 +119,7 @@ def task_2():
 
     model.summary()
 
-    # Train model    
+    # Train model
     history = model.fit(x_train, 
             y_train, 
             shuffle=True,
@@ -158,26 +149,39 @@ def task_2():
     plt.savefig('./plot_task2_no_augmentation.png')
     plt.close()
 
-    print("Now using data augmentation")
+    print("=== Now using data augmentation ===")
 
     train_gen = ImageDataGenerator(width_shift_range=0.15,     # horizontal translation
                                     height_shift_range=0.15,   # vertical translation
                                     channel_shift_range=0.3,   # random channel shifts
                                     rotation_range=360,        # rotation
                                     zoom_range=0.3,            # zoom in/out randomly
-                                    shear_range=15,            # deformation
+                                    shear_range=15             # deformation
                                     )
     val_gen = ImageDataGenerator()
 
-    batch_size = 16
-    es = EarlyStopping(monitor='val_loss', patience=200, restore_best_weights=True)
-
-    train_loader = train_gen.flow(x_train, y_train, batch_size=batch_size)
+    train_loader = train_gen.flow(x_train, y_train, batch_size=16)
     val_loader = val_gen.flow(x_val, y_val, batch_size=x_val.shape[0])
 
+    # Build model
+    model = Sequential()
+    model.add(vgg16)
+    model.add(Flatten())
+    model.add(Dense(128, activation='relu'))
+    model.add(Dense(3, activation='softmax'))
+
+    # Compile model
+    model.compile(optimizer=optimizers.Adam(learning_rate=0.001),
+                loss='categorical_crossentropy', 
+                metrics=['accuracy', 'mse'])
+    es = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+    model.summary()
+
+    # Train model
     history = model.fit(train_loader,
-                            steps_per_epoch=x_train.shape[0]//batch_size,
-                            epochs=50, 
+                            epochs=50,
+                            batch_size=5,
                             validation_data=val_loader,
                             validation_steps=1,
                             callbacks=[es])
@@ -203,22 +207,22 @@ def task_2():
     plt.savefig('./plot_task2_augmentation.png')
     plt.close()
 
-    print("Done with task 2.")
+    print("=== Done with task 2. ===")
 
     
 if __name__ == '__main__':
     if (len(sys.argv) == 2):
         if sys.argv[1] == "1":
-            print("Launching task 1")
+            print("=== Launching task 1 ===")
             task_1()
         elif sys.argv[1] == "2":
-            print("Launching task 2")
+            print("=== Launching task 2 ===")
             task_2()
         else:
-            print("Launching both tasks")
+            print("=== Launching both tasks ===")
             task_1()
             task_2()
     else:
-        print("Launching both tasks")
+        print("=== Launching both tasks ===")
         task_1()
         task_2()
