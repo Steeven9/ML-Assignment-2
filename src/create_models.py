@@ -3,6 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from scipy.stats import norm
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential, applications, optimizers, utils
 from tensorflow.keras.callbacks import EarlyStopping
@@ -59,11 +60,11 @@ def task_1():
     y_test = utils.to_categorical(y_test, n_classes)
 
     # Build all models and save them
+    # - base
     # – learning rate: [0.01, 0.0001]
     # – number of neurons: [16, 64]
+    base_model, base_history = create_and_train_model(8, 0.003, x_train, y_train)
     models_array = []
-    model, history = create_and_train_model(8, 0.003, x_train, y_train)
-    models_array.append((model, history, '8 neurons - 0.003 LR'))
     model, history = create_and_train_model(16, 0.01, x_train, y_train)
     models_array.append((model, history, '16 neurons - 0.01 LR'))
     model, history = create_and_train_model(64, 0.01, x_train, y_train)
@@ -73,11 +74,17 @@ def task_1():
     model, history = create_and_train_model(64, 0.0001, x_train, y_train)
     models_array.append((model, history, '64 neurons - 0.0001 LR'))
 
+    scores = base_model.evaluate(x_test, y_test)
+    print('\nModel: base')
+    print('Test loss: {} - Accuracy: {} - MSE: {}'.format(*scores))
+    print('Epochs: {}'.format(len(base_history.epoch)))
+    base_acc = scores[1]
+    base_s2 = base_acc * (1 - base_acc)
     acc = 0
     for model_struct in models_array:
-        # Evaluate model
+        # Evaluate additional models
         scores = model_struct[0].evaluate(x_test, y_test)
-        print('Model: {}'.format(model_struct[2]))
+        print('\nModel: {}'.format(model_struct[2]))
         print('Test loss: {} - Accuracy: {} - MSE: {}'.format(*scores))
         print('Epochs: {}'.format(len(model_struct[1].epoch)))
         if scores[1] > acc:
@@ -85,7 +92,37 @@ def task_1():
             history = model_struct[1]
             best_model = model_struct[2]
             acc = scores[1]
-    print('Best model is: ' + best_model)
+
+    # Test statistics
+    s2_curr = acc * (1 - acc)
+    Tt = (acc - base_acc)
+    Tt /= np.sqrt(s2_curr / len(x_test) + base_s2 / len(x_test))
+    
+    # Paired t-test
+    p_val = 2 * (1 - norm.cdf(abs(Tt)))
+    print('\nPaired t-test: T={:.2f}, p-value={:.4f}'.format(Tt, p_val))
+    
+    print('Is T={} in 95% confidence interval (-1.96, 1.96)? '.format(Tt), end='')
+    if Tt < 1.96 and Tt > -1.96:
+        print('Yes')
+        # Compare accuracies
+        print('Accuracies:')
+        print('Base: {} -- bonus: {}'.format(base_acc, acc))
+        if base_acc > acc:
+            model = base_model
+            history = base_history
+            best_model = 'base'
+    else:
+        print('No')
+        # Compare variances
+        print('Variances:')
+        print('Base: {} -- bonus: {}'.format(base_s2, s2_curr))
+        if base_s2 < s2_curr:
+            model = base_model
+            history = base_history
+            best_model = 'base'
+
+    print('Best model: ' + best_model)
 
     # Save best model
     model.save('./nn_task1.h5')
@@ -98,12 +135,12 @@ def task_1():
     plt.plot(history.history['val_accuracy'], label='Validation accuracy', c='C1')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
-    plt.title("Task 1")
+    plt.title('Task 1')
     plt.legend()
     plt.savefig('./plot_task1.png')
     plt.close()
 
-    print("=== Done with task 1. ===")
+    print('=== Done with task 1. ===')
 
 
 def task_2():
@@ -172,12 +209,12 @@ def task_2():
     plt.plot(history.history['val_accuracy'], label='Validation accuracy', c='C1')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
-    plt.title("Task 2 - without augmentation")
+    plt.title('Task 2 - without augmentation')
     plt.legend()
     plt.savefig('./plot_task2_no_augmentation.png')
     plt.close()
 
-    print("=== Now using data augmentation ===")
+    print('=== Now using data augmentation ===')
 
     train_gen = ImageDataGenerator(width_shift_range=0.15,     # horizontal translation
                                     height_shift_range=0.15,   # vertical translation
@@ -230,27 +267,27 @@ def task_2():
     plt.plot(history.history['val_accuracy'], label='Validation accuracy', c='C1')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
-    plt.title("Task 2 - with augmentation")
+    plt.title('Task 2 - with augmentation')
     plt.legend()
     plt.savefig('./plot_task2_augmentation.png')
     plt.close()
 
-    print("=== Done with task 2. ===")
+    print('=== Done with task 2. ===')
 
     
 if __name__ == '__main__':
     if (len(sys.argv) == 2):
-        if sys.argv[1] == "1":
-            print("=== Launching task 1 ===")
+        if sys.argv[1] == '1':
+            print('=== Launching task 1 ===')
             task_1()
-        elif sys.argv[1] == "2":
-            print("=== Launching task 2 ===")
+        elif sys.argv[1] == '2':
+            print('=== Launching task 2 ===')
             task_2()
         else:
-            print("=== Launching both tasks ===")
+            print('=== Launching both tasks ===')
             task_1()
             task_2()
     else:
-        print("=== Launching both tasks ===")
+        print('=== Launching both tasks ===')
         task_1()
         task_2()
