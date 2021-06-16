@@ -3,7 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from scipy.stats import norm
+from scipy.stats import t
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Sequential, applications, optimizers, utils
 from tensorflow.keras.callbacks import EarlyStopping
@@ -99,7 +99,7 @@ def task_1():
     Tt /= np.sqrt(s2_curr / len(x_test) + base_s2 / len(x_test))
     
     # Paired t-test
-    p_val = 2 * (1 - norm.cdf(abs(Tt)))
+    p_val = 2 * (1 - t.cdf(abs(Tt), df=len(x_test)))
     print('\nPaired t-test: T={:.2f}, p-value={:.4f}'.format(Tt, p_val))
     
     print('Is T={} in 95% confidence interval (-1.96, 1.96)? '.format(Tt), end='')

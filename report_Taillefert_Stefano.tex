@@ -91,15 +91,15 @@
 
 \section*{Intro}
 
-	The submission archive includes everything you need to run the models (in \texttt{.pkl} format), but the code and the full \texttt{.h1} models are also available at:\\
+	The submission archive includes all the necessary code, but the model files must be retrieved from:\\
 
 	\url{https://github.com/Steeven9/ML-Assignment-2}\\
 
-	The repo will be made public after the deadline to avoid surprises; also since it's versioned you can check that the models were not updated after the deadline.\\
+	The repo will be made public shortly after the deadline to avoid surprises; also since it's versioned you can check that the models were not updated after the deadline.\\
 
 	To run the models, simply \texttt{cd} into \texttt{deliverable/} and run \texttt{run\_task1.py} or \texttt{run\_task2.py}. Make sure to have the \texttt{custom\_utils.py} file in the same directory!\\
 
-	To compile and train the models, run \texttt{create\_models.py [task\_number]} from the \texttt{src} folder. Without argument, both tasks will be executed. The \texttt{custom\_utils.py} file is required here as well (yes, two copies are already included in both folders for your convenience).\\
+	To compile and train the models, run \texttt{create\_models.py [task\_number]} from the \texttt{src} folder. Without arguments, both tasks will be executed. The \texttt{custom\_utils.py} file is required here as well (yes, two copies are already included in both folders for convenience).\\
 
 	In both cases the script will automatically download the necessary datasets, so everything should work out of the box on first try. Hopefully.
 
@@ -127,16 +127,34 @@
 		\begin{tabular}{cccc}
 			Model & Test loss & Accuracy & MSE\\
 			\hline
-			8 neurons - 0.003 LR & 0.3564 & 0.8576 & 0.0674\\
-			16 neurons - 0.01 LR & 0.4255 & 0.8363 & 0.0798\\
-			64 neurons - 0.01 LR & 0.4881 & 0.8113 & 0.0920\\
-			16 neurons - 0.0001 LR & 0.3692 & 0.8536 & 0.0703\\
-			64 neurons - 0.0001 LR & 0.3952 & 0.8416 & 0.0756
+			8 neurons - 0.003 LR & 0.3513 & 0.8653 & 0.0669\\
+			16 neurons - 0.01 LR & 0.4168 & 0.8337 & 0.0790\\
+			64 neurons - 0.01 LR & 0.4315 & 0.8297 & 0.0812\\
+			16 neurons - 0.0001 LR & 0.3693 & 0.8540 & 0.0704\\
+			64 neurons - 0.0001 LR & 0.3956 & 0.8410 & 0.0757
 		\end{tabular}
 	\end{table}
 
-	All five models have been trained and evaluated in sequence on the same dataset. As we can see, the best one is the one with 8 neurons and 0.003 learning rate, the initial one.
-	This is based on the lowest test loss and MSE, and the highest accuracy.
+	All five models have been trained and evaluated in sequence on the same dataset.\\
+	
+	\newpage
+	Futhermore, a statistical analysis has been conducted, and below is the output:\\
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{src/result.png}
+		\caption{The result of the statistical analysis}
+		\label{fig:result}
+	\end{figure}
+
+	As we can see, the paired Student's t-test indicates that our initial hypothesis,
+	which is that the two models are equivalent, is accepted: the T value is in the
+	95\% confidence interval, so this means that the compared samples are very similar. 
+	The p-value is also relatively big (> 0.005), so this further confirms the correlation.
+	Therefore we pick the model with the highest accuracy between the two, since they
+	are statistically very equivalent.\\
+
+	According to our data, the best model is the base one (8 neurons - 0.003 learning rate).
 
 
 \newpage
@@ -144,7 +162,7 @@
 
 	1. - 3. See the following sections for the details of the behavior of the two models. In both cases the hidden layer I added is a dense one with 128 neurons and ReLu activation function, while the output layer has three neurons since we have three classes (rock, paper, scissors).\\
 
-	4. For this task I tried to use my gaming rig at home (Intel i5-9600K, 16GB DDR3@3200, RTX 2060) instead of Colab. I spent a whole day struggling with CUDA and Python on Windows 10 (ugh) and after some fiddling I managed to make it work. The first part, without data augmentation, worked fine, but for the second part I ran out of VRAM after the first epoch. That was a bit underwhelming to say the least.\\
+	4. For this task I tried to use my gaming rig at home (Intel i5-9600K, 16GB DDR4@3200, RTX 2060) instead of Colab. I spent a whole day struggling with CUDA and Python on Windows 10 (ugh) and after some fiddling I managed to make it work. The first part, without data augmentation, worked fine, but for the second part I ran out of VRAM after the first epoch. That was a bit underwhelming to say the least.\\
 	I included both the result from Colab and my machine for the first part, while the second one has been run only on the cloud.\\
 
 	I am unaware if it's a hard limitation or if I could tune the model to get around it (maybe less neurons for the hidden layer?); despite the fact that I would've loved to run everything locally, I didn't have much time left to investigate further. Here's the error I got:\\
